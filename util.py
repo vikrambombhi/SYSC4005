@@ -14,9 +14,10 @@ def get_data(filename):
 def qqplot(measurements, dist, sparams, title):
     stats.probplot(measurements, dist=dist, sparams=sparams, plot=pylab)
     pylab.title(title)
-    filepath = title+".png"
+    filepath = "figures/"+title+".png"
     pylab.savefig(filepath)
-    pylab.show()
+    # pylab.show()
+    pylab.close()
 
 
 def hist(measurements, title):
@@ -27,13 +28,14 @@ def hist(measurements, title):
     center = (bins[:-1] + bins[1:]) / 2
     pylab.title(title)
     pylab.bar(center, hist, align='center', width=width)
-    pylab.show()
+    filepath = "figures/"+title+".png"
+    pylab.savefig(filepath)
+    # pylab.show()
+    pylab.close()
 
-
-ws1 = get_data("data/ws1.dat")
-ws2 = get_data("data/ws2.dat")
-ws3 = get_data("data/ws3.dat")
-
-
-hist(ws1, "ws1 hist")
-qqplot(ws1, "frechet_r", (1.5), "ws1 frechet_r 1.5")
+def create_plots(measurements, plot_type, title):
+    i=0.5
+    while (i<=5):
+        t = title+"_"+plot_type+"_"+str(i)
+        qqplot(measurements, plot_type, (i), t)
+        i+=0.5
