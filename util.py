@@ -2,7 +2,7 @@ import numpy as np
 import pylab
 import scipy.stats as stats
 import math
-import pdb
+
 
 def get_data(filename):
     with open(filename) as f:
@@ -33,9 +33,10 @@ def hist(measurements, title):
     # pylab.show()
     pylab.close()
 
+
 def create_plots(measurements, plot_type, title):
-    i=0.5
-    while (i<=5):
+    i = 0.5
+    while (i <= 5):
         t = title+"_"+plot_type+"_"+str(i)
         qqplot(measurements, plot_type, (i), t)
-        i+=0.5
+        i += 0.5
