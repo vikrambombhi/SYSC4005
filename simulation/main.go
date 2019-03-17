@@ -15,6 +15,11 @@ func main() {
 	ws2 := readFile("../data/ws2.dat")
 	ws3 := readFile("../data/ws3.dat")
 
+	servinsp1 := readFile("../data/servinsp1.dat")
+	servinsp22 := readFile("../data/servinsp22.dat")
+	servinsp23 := readFile("../data/servinsp23.dat")
+	fmt.Println("Done reading files")
+
 	ws1Component1 := make(chan bool, 2)
 	workstation.Workstation([]chan bool{ws1Component1}, ws1, "ws1")
 
@@ -26,10 +31,14 @@ func main() {
 	ws3Component3 := make(chan bool, 2)
 	workstation.Workstation([]chan bool{ws3Component1, ws3Component3}, ws3, "ws3")
 
-	inspector.Inspector([]chan bool{ws1Component1, ws2Component1, ws3Component1}, "inspector1")
-	inspector.Inspector([]chan bool{ws2Component2, ws3Component3}, "inspector2")
+	component1 := inspector.CreateComponent([]chan bool{ws1Component1, ws2Component1, ws3Component1}, servinsp1, "component1")
+	inspector.Inspector([]inspector.Component{component1}, "inspector1")
 
-	// todo: Replace this with a sync wait
+	component2 := inspector.CreateComponent([]chan bool{ws2Component2}, servinsp22, "component2")
+	component3 := inspector.CreateComponent([]chan bool{ws3Component3}, servinsp23, "component3")
+	inspector.Inspector([]inspector.Component{component2, component3}, "inspector2")
+
+	// TODO: Replace this with a sync wait
 	for {
 	}
 }

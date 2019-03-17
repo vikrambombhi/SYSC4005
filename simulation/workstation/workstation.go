@@ -8,20 +8,20 @@ import (
 
 type ws struct {
 	buffers []chan bool
-	name    string
 	timing  []float64
+	name    string
 }
 
-// Create Workstation and have it start assembeling products
+// Workstation creates a workstation entity and has it start assembeling products
 func Workstation(buffers []chan bool, timing []float64, name string) {
-	ws := ws{buffers, name, timing}
+	ws := ws{buffers, timing, name}
 	go ws.start()
 }
 
 func (ws ws) start() {
 	var wg sync.WaitGroup
 
-	for _, assembeTime := range ws.timing {
+	for i, assembeTime := range ws.timing {
 		for _, buffer := range ws.buffers {
 			go func(buffer chan bool) {
 				getComponent(buffer, &wg)
@@ -29,12 +29,14 @@ func (ws ws) start() {
 			wg.Add(1)
 		}
 		wg.Wait()
+		// Simulate assembly time
 		time.Sleep(time.Duration(assembeTime * 1000000000))
-		fmt.Printf("%s making product\n", ws.name)
+		fmt.Printf("%s done making product #%d\n\n\n", ws.name, i)
 	}
 }
 
 func getComponent(buffer chan bool, wg *sync.WaitGroup) {
 	<-buffer
+	fmt.Println("recievced something from a buffer")
 	wg.Done()
 }
