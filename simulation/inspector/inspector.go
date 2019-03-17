@@ -7,7 +7,7 @@ import (
 )
 
 type inspector struct {
-	components []Component
+	components []*Component
 	name       string
 }
 
@@ -26,7 +26,7 @@ func CreateComponent(buffers []chan bool, timings []float64, name string) Compon
 
 // Inspector creates a inspector entity and has it start inspecting components,
 // the inspector places components onto buffer when done being inspected
-func Inspector(components []Component, name string) {
+func Inspector(components []*Component, name string) {
 	inspector := inspector{components, name}
 	go inspector.start()
 }
@@ -43,11 +43,11 @@ func (inspector inspector) start() {
 }
 
 // Inspects component and gives it to the first available buffer
-func inspectComponent(component Component) {
-	inspectTime := component.timing[component.position]
+func inspectComponent(component *Component) {
+	inspectTime := component.timing[component.position%len(component.timing)]
 	// TODO: find least full buffer while sleeping
 	time.Sleep(time.Duration(inspectTime * 1000000000))
-	component.position++
+	component.position = component.position + 1
 
 	for {
 		var leastFullBuffer chan bool

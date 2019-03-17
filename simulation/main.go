@@ -37,11 +37,11 @@ func main() {
 	wg.Add(1)
 
 	component1 := inspector.CreateComponent([]chan bool{ws1Component1, ws2Component1, ws3Component1}, servinsp1, "component1")
-	inspector.Inspector([]inspector.Component{component1}, "inspector1")
+	inspector.Inspector([]*inspector.Component{&component1}, "inspector1")
 
 	component2 := inspector.CreateComponent([]chan bool{ws2Component2}, servinsp22, "component2")
 	component3 := inspector.CreateComponent([]chan bool{ws3Component3}, servinsp23, "component3")
-	inspector.Inspector([]inspector.Component{component2, component3}, "inspector2")
+	inspector.Inspector([]*inspector.Component{&component2, &component3}, "inspector2")
 
 	wg.Wait()
 }
