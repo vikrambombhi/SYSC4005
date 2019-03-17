@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"sync"
 
 	"github.com/vikrambombhi/SYSC4005/simulation/inspector"
 	"github.com/vikrambombhi/SYSC4005/simulation/workstation"
 )
 
 func main() {
+	var wg sync.WaitGroup
 	ws1 := readFile("../data/ws1.dat")
 	ws2 := readFile("../data/ws2.dat")
 	ws3 := readFile("../data/ws3.dat")
@@ -21,15 +23,18 @@ func main() {
 	fmt.Println("Done reading files")
 
 	ws1Component1 := make(chan bool, 2)
-	workstation.Workstation([]chan bool{ws1Component1}, ws1, "ws1")
+	workstation.Workstation(&wg, []chan bool{ws1Component1}, ws1, "ws1")
+	wg.Add(1)
 
 	ws2Component1 := make(chan bool, 2)
 	ws2Component2 := make(chan bool, 2)
-	workstation.Workstation([]chan bool{ws2Component1, ws2Component2}, ws2, "ws2")
+	workstation.Workstation(&wg, []chan bool{ws2Component1, ws2Component2}, ws2, "ws2")
+	wg.Add(1)
 
 	ws3Component1 := make(chan bool, 2)
 	ws3Component3 := make(chan bool, 2)
-	workstation.Workstation([]chan bool{ws3Component1, ws3Component3}, ws3, "ws3")
+	workstation.Workstation(&wg, []chan bool{ws3Component1, ws3Component3}, ws3, "ws3")
+	wg.Add(1)
 
 	component1 := inspector.CreateComponent([]chan bool{ws1Component1, ws2Component1, ws3Component1}, servinsp1, "component1")
 	inspector.Inspector([]inspector.Component{component1}, "inspector1")
@@ -38,9 +43,7 @@ func main() {
 	component3 := inspector.CreateComponent([]chan bool{ws3Component3}, servinsp23, "component3")
 	inspector.Inspector([]inspector.Component{component2, component3}, "inspector2")
 
-	// TODO: Replace this with a sync wait
-	for {
-	}
+	wg.Wait()
 }
 
 func readFile(filename string) []float64 {

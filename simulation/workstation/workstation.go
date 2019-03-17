@@ -10,11 +10,12 @@ type ws struct {
 	buffers []chan bool
 	timing  []float64
 	name    string
+	wg      *sync.WaitGroup
 }
 
 // Workstation creates a workstation entity and has it start assembeling products
-func Workstation(buffers []chan bool, timing []float64, name string) {
-	ws := ws{buffers, timing, name}
+func Workstation(wg *sync.WaitGroup, buffers []chan bool, timing []float64, name string) {
+	ws := ws{buffers, timing, name, wg}
 	go ws.start()
 }
 
@@ -29,14 +30,15 @@ func (ws ws) start() {
 			wg.Add(1)
 		}
 		wg.Wait()
-		// Simulate assembly time
+		// Simulates assembly time
 		time.Sleep(time.Duration(assembeTime * 1000000000))
-		fmt.Printf("%s done making product #%d\n\n\n", ws.name, i)
+		fmt.Printf("%s done making product #%d\n\n\n", ws.name, i+1)
 	}
+
+	ws.wg.Done()
 }
 
 func getComponent(buffer chan bool, wg *sync.WaitGroup) {
 	<-buffer
-	fmt.Println("recievced something from a buffer")
 	wg.Done()
 }
