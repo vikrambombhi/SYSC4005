@@ -14,6 +14,7 @@ import (
 )
 
 func main() {
+	dataDir := flag.String("data", "./", "directory data files are in")
 	alternativeDesign := flag.Bool("alt", false, "Flag to specify if alternative design should be used")
 	flag.Parse()
 	fmt.Println("alternative design flag set to:", *alternativeDesign)
@@ -22,9 +23,9 @@ func main() {
 	ws2 := readFile("../data/ws2.dat")
 	ws3 := readFile("../data/ws3.dat")
 
-	servinsp1 := readFile("../data/servinsp1.dat")
-	servinsp22 := readFile("../data/servinsp22.dat")
-	servinsp23 := readFile("../data/servinsp23.dat")
+	servinsp1 := readFile(*dataDir + "/servinsp1.dat")
+	servinsp22 := readFile(*dataDir + "/servinsp22.dat")
+	servinsp23 := readFile(*dataDir + "/servinsp23.dat")
 
 	ws1Component1 := make(chan string, 2)
 	workstation.Workstation(&wg, []chan string{ws1Component1}, ws1, "ws1")
