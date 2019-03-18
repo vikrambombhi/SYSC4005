@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"os"
 	"strconv"
@@ -13,6 +14,9 @@ import (
 )
 
 func main() {
+	alternativeDesign := flag.Bool("alt", false, "Flag to specify if alternative design should be used")
+	flag.Parse()
+	fmt.Println("alternative design flag set to:", *alternativeDesign)
 	var wg sync.WaitGroup
 	ws1 := readFile("../data/ws1.dat")
 	ws2 := readFile("../data/ws2.dat")
@@ -36,7 +40,12 @@ func main() {
 	workstation.Workstation(&wg, []chan string{ws3Component1, ws3Component3}, ws3, "ws3")
 	wg.Add(1)
 
-	component1 := component.CreateComponent([]chan string{ws1Component1, ws2Component1, ws3Component1}, servinsp1, "component1")
+	var component1 component.Component
+	if *alternativeDesign {
+		component1 = component.CreateComponent([]chan string{ws3Component1, ws2Component1, ws1Component1}, servinsp1, "component1")
+	} else {
+		component1 = component.CreateComponent([]chan string{ws1Component1, ws2Component1, ws3Component1}, servinsp1, "component1")
+	}
 	inspector.Inspector([]*component.Component{&component1}, "inspector1")
 
 	component2 := component.CreateComponent([]chan string{ws2Component2}, servinsp22, "component2")
@@ -61,7 +70,7 @@ func readFile(filename string) []float64 {
 		if err != nil {
 			panic(err)
 		}
-		data = append(data, f/100)
+		data = append(data, f)
 		s, e = Readln(r)
 	}
 
