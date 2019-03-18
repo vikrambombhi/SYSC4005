@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/vikrambombhi/SYSC4005/simulation/component"
 	"github.com/vikrambombhi/SYSC4005/simulation/inspector"
 	"github.com/vikrambombhi/SYSC4005/simulation/workstation"
 )
@@ -20,28 +21,27 @@ func main() {
 	servinsp1 := readFile("../data/servinsp1.dat")
 	servinsp22 := readFile("../data/servinsp22.dat")
 	servinsp23 := readFile("../data/servinsp23.dat")
-	fmt.Println("Done reading files")
 
-	ws1Component1 := make(chan bool, 2)
-	workstation.Workstation(&wg, []chan bool{ws1Component1}, ws1, "ws1")
+	ws1Component1 := make(chan string, 2)
+	workstation.Workstation(&wg, []chan string{ws1Component1}, ws1, "ws1")
 	wg.Add(1)
 
-	ws2Component1 := make(chan bool, 2)
-	ws2Component2 := make(chan bool, 2)
-	workstation.Workstation(&wg, []chan bool{ws2Component1, ws2Component2}, ws2, "ws2")
+	ws2Component1 := make(chan string, 2)
+	ws2Component2 := make(chan string, 2)
+	workstation.Workstation(&wg, []chan string{ws2Component1, ws2Component2}, ws2, "ws2")
 	wg.Add(1)
 
-	ws3Component1 := make(chan bool, 2)
-	ws3Component3 := make(chan bool, 2)
-	workstation.Workstation(&wg, []chan bool{ws3Component1, ws3Component3}, ws3, "ws3")
+	ws3Component1 := make(chan string, 2)
+	ws3Component3 := make(chan string, 2)
+	workstation.Workstation(&wg, []chan string{ws3Component1, ws3Component3}, ws3, "ws3")
 	wg.Add(1)
 
-	component1 := inspector.CreateComponent([]chan bool{ws1Component1, ws2Component1, ws3Component1}, servinsp1, "component1")
-	inspector.Inspector([]*inspector.Component{&component1}, "inspector1")
+	component1 := component.CreateComponent([]chan string{ws1Component1, ws2Component1, ws3Component1}, servinsp1, "component1")
+	inspector.Inspector([]*component.Component{&component1}, "inspector1")
 
-	component2 := inspector.CreateComponent([]chan bool{ws2Component2}, servinsp22, "component2")
-	component3 := inspector.CreateComponent([]chan bool{ws3Component3}, servinsp23, "component3")
-	inspector.Inspector([]*inspector.Component{&component2, &component3}, "inspector2")
+	component2 := component.CreateComponent([]chan string{ws2Component2}, servinsp22, "component2")
+	component3 := component.CreateComponent([]chan string{ws3Component3}, servinsp23, "component3")
+	inspector.Inspector([]*component.Component{&component2, &component3}, "inspector2")
 
 	wg.Wait()
 }
@@ -61,7 +61,7 @@ func readFile(filename string) []float64 {
 		if err != nil {
 			panic(err)
 		}
-		data = append(data, f)
+		data = append(data, f/100)
 		s, e = Readln(r)
 	}
 
