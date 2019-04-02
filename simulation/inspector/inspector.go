@@ -30,14 +30,14 @@ func (inspector inspector) start() {
 }
 
 // Inspects component and gives it to the first available buffer
-func inspectComponent(component *component.Component, name string) {
-	inspectTime := component.GetNextTime()
+func inspectComponent(comp *component.Component, name string) {
+	inspectTime := comp.GetNextTime()
 	// TODO: find least full buffer while sleeping
 	time.Sleep(time.Duration(inspectTime * 1000000000))
 
 	for {
-		var leastFullBuffer chan string
-		for _, buffer := range component.GetBuffers() {
+		var leastFullBuffer chan component.SendVal
+		for _, buffer := range comp.GetBuffers() {
 			if leastFullBuffer == nil {
 				leastFullBuffer = buffer
 			} else if len(buffer) < len(leastFullBuffer) {
@@ -45,7 +45,7 @@ func inspectComponent(component *component.Component, name string) {
 			}
 		}
 		select {
-		case leastFullBuffer <- component.GetName():
+		case leastFullBuffer <- component.SendVal{Name: comp.GetName(), T: time.Now()}:
 			return
 		default:
 		}
